@@ -1,0 +1,220 @@
+!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Finestra accesa</title>
+<meta name="theme-color" content="#0066CC">
+<style>
+:root{--bg:#FFFFFF;--ink:#17324D;--soft:#566A7F;--card:#F3F6FA;--line:#C5D0DC;--primary:#0066CC;--onp:#FFFFFF;--lamp:#F5C76B;--night:#DDE6F0;--alert:#B3261E;--ok:#1F7A5A;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1B2A;--ink:#EAF0F8;--soft:#9FB1C8;--card:#17263B;--line:#2B4060;--primary:#5AA2F0;--onp:#0B1626;--night:#223552;--alert:#F28B82;--ok:#5CCB9E}}
+:root[data-theme="dark"]{--bg:#0F1B2A;--ink:#EAF0F8;--soft:#9FB1C8;--card:#17263B;--line:#2B4060;--primary:#5AA2F0;--onp:#0B1626;--night:#223552;--alert:#F28B82;--ok:#5CCB9E}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17px;line-height:1.5}
+.top{background:var(--primary);color:var(--onp);padding:14px 20px;border-bottom:4px solid var(--lamp)}
+.top{display:flex;align-items:center;gap:12px}.top svg{flex:none}.top strong{display:block;font-size:20px;line-height:1.2}.top span{font-size:14px;opacity:.95}
+main{max-width:520px;margin:0 auto;padding:22px 20px 120px}
+h1{font-size:26px;line-height:1.2;font-weight:700;margin:0 0 8px}
+p{margin:0 0 14px;max-width:60ch}
+.soft{color:var(--soft)}
+section[hidden]{display:none}
+.win{display:block;margin:6px auto 18px;width:120px;height:auto}
+.win .glass{fill:var(--night);transition:fill .8s}
+.win.lit .glass{fill:var(--lamp)}
+.win .frame{fill:none;stroke:var(--soft);stroke-width:6}
+.btn{display:block;width:100%;min-height:52px;border:2px solid transparent;border-radius:4px;padding:13px 18px;font:inherit;font-weight:600;cursor:pointer;margin-bottom:10px;text-align:center;text-decoration:none}
+.btn.main{background:var(--primary);color:var(--onp)}
+.btn.line{background:transparent;color:var(--primary);border-color:var(--primary)}
+.btn.sos{background:var(--alert);color:var(--onp)}
+.btn:focus-visible,.tab:focus-visible,input:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.note{background:var(--card);border-left:4px solid var(--primary);border-radius:4px;padding:14px 16px;margin:14px 0}
+.foot{font-size:14px;color:var(--soft);border-top:1px solid var(--line);padding-top:14px;margin-top:26px}
+#log{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.m{padding:11px 14px;border-radius:8px;max-width:85%;background:var(--card);border:1px solid var(--line)}
+.m.me{align-self:flex-end;background:var(--primary);color:var(--onp);border-color:var(--primary)}
+.row{display:flex;gap:8px}
+input{flex:1;min-width:0;font:inherit;padding:13px 14px;border-radius:4px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+.row .btn{width:auto;margin:0;min-height:50px}
+ol.steps{list-style:none;margin:0 0 16px;padding:0}
+.steps li{padding:12px 14px 12px 16px;border-left:4px solid var(--line);margin-bottom:8px;color:var(--soft)}
+.steps li.on{border-color:var(--primary);color:var(--ink);font-weight:600}
+.steps li.done{border-color:var(--ok);color:var(--ink)}
+.steps li.end{border-color:var(--alert);color:var(--ink);font-weight:600}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);display:flex;padding:0 56px calc(0px + env(safe-area-inset-bottom,0px)) 4px}
+.tab{flex:1;min-height:54px;border:0;border-bottom:4px solid transparent;background:none;color:var(--soft);font:inherit;font-size:15px;font-weight:600;cursor:pointer}
+.tab[aria-selected="true"]{color:var(--primary);border-bottom-color:var(--primary)}
+.days{display:flex;gap:6px;justify-content:center;margin:0 0 16px}.d{width:22px;height:30px;border-radius:2px;background:var(--night);border:2px solid var(--soft)}.d.on{background:var(--lamp);border-color:var(--lamp)}
+#lista{list-style:none;margin:14px 0;padding:0}#lista li{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:12px 14px;margin-bottom:10px}#lista label{display:block;font-weight:600}#lista input{width:auto;margin-right:6px}#lista .tab{flex:none;min-height:40px;margin-top:6px;border:1px solid var(--line);border-radius:4px}.stack input{display:block;width:100%;margin-bottom:8px}
+@media (prefers-reduced-motion:reduce){.win .glass{transition:none}}
+</style>
+</head>
+<body>
+<header class="top"><svg width="44" height="44" viewBox="0 0 120 120" aria-hidden="true"><rect width="120" height="120" rx="28" fill="#fff"/><path d="M26 58 L60 28 L94 58 V92 a6 6 0 0 1 -6 6 H32 a6 6 0 0 1 -6 -6 Z" fill="none" stroke="#0066CC" stroke-width="6" stroke-linejoin="round"/><rect x="44" y="56" width="32" height="30" rx="5" fill="#F5C76B"/><path d="M51 71 L58 78 L70 63" fill="none" stroke="#0066CC" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Finestra accesa</strong><span>Servizio di vicinanza per chi vive solo</span></div></header>
+<main>
+<section id="oggi">
+<svg id="win" class="win" viewBox="0 0 150 190" role="img" aria-label="Finestra: spenta prima del check-in, accesa dopo">
+<rect class="glass" x="10" y="10" width="130" height="170" rx="6"/>
+<rect class="frame" x="10" y="10" width="130" height="170" rx="6"/>
+<path class="frame" d="M75 10V180M10 95H140" style="stroke-width:4"/>
+</svg>
+<div class="days" id="days" role="img" aria-label="Ultimi 7 giorni, il più recente a destra"></div>
+<div class="note" id="ieri" hidden></div>
+<h1 id="titolo">Come stai oggi?</h1>
+<p id="sub" class="soft">Un tocco al giorno. Se non rispondi, qualcuno viene avvisato.</p>
+<div id="azioni">
+<button class="btn main" id="bene">Sto bene</button>
+<button class="btn line" id="male">Non mi sento bene</button>
+</div>
+<div id="wa" hidden></div>
+<div id="malebox" class="note" hidden>
+<p>Mi dispiace. Puoi parlarne in chat oppure chiedere aiuto subito.</p>
+<button class="btn line" data-go="chat">Parla in chat</button>
+<a class="btn sos" href="tel:112">Chiama il 112</a>
+</div>
+</section>
+<section id="chat" hidden>
+<h1>Chat</h1>
+<p class="soft">Risposte semplici già scritte. Non è un medico e non sostituisce una persona vera.</p>
+<div id="log" aria-live="polite"></div>
+<div class="row">
+<input id="txt" type="text" placeholder="Scrivi qui" aria-label="Messaggio" autocomplete="off">
+<button class="btn main" id="invia">Invia</button>
+</div>
+</section>
+<section id="contatti" hidden>
+<h1>Contatti</h1>
+<p class="soft">Aggiungi una persona, ma spunta la casella solo dopo che ti ha detto di sì. Finché è in pausa, non riceve nulla.</p>
+<ul id="lista"></ul>
+<div class="stack">
+<input id="cn" type="text" placeholder="Nome (es. Greis)" aria-label="Nome" autocomplete="off">
+<input id="ct" type="tel" placeholder="Numero WhatsApp con prefisso, es. +39 333…" aria-label="Numero WhatsApp" autocomplete="off">
+</div>
+<button class="btn main" id="aggiungi">Aggiungi contatto</button>
+<div class="note soft">Modalità di prova: per ora gli avvisi non partono davvero. I dati restano solo su questo telefono.</div>
+</section>
+<section id="allerta" hidden>
+<h1>Se non rispondi</h1>
+<p class="soft">Simulazione di cosa succede quando un check-in resta senza risposta.</p>
+<ol class="steps" id="steps">
+<li>Nessuna risposta al check-in entro l'orario scelto</li>
+<li>L'app avvisa 3 volontari vicini a te</li>
+<li>Un volontario chiama o passa a trovarti</li>
+<li>Se nessuno risponde, l'app chiama il 112 con la tua posizione</li>
+</ol>
+<button class="btn main" id="avanti">Avvia la simulazione</button>
+<button class="btn line" id="nessuno" hidden>Nessun volontario risponde</button>
+<a class="btn sos" id="chiama" href="tel:112" hidden>Chiama il 112</a>
+<div class="note" id="esito" hidden>Un volontario ti ha raggiunto. Tutto a posto, niente 112.</div>
+<div class="note soft">I volontari sono la parte più importante. In questo prototipo sono finti.</div>
+</section>
+<p class="foot">Questo servizio non sostituisce i soccorsi. In caso di emergenza chiama il 112.</p>
+</main>
+<nav role="tablist" aria-label="Sezioni">
+<button class="tab" role="tab" data-go="oggi" aria-selected="true">Oggi</button>
+<button class="tab" role="tab" data-go="chat" aria-selected="false">Chat</button>
+<button class="tab" role="tab" data-go="contatti" aria-selected="false">Contatti</button>
+<button class="tab" role="tab" data-go="allerta" aria-selected="false">Allerta</button>
+</nav>
+<script>
+var $=function(i){return document.getElementById(i)};
+function go(n){
+["oggi","chat","contatti","allerta"].forEach(function(s){$(s).hidden=(s!==n)});
+document.querySelectorAll(".tab").forEach(function(t){t.setAttribute("aria-selected",t.dataset.go===n)});
+window.scrollTo(0,0);
+}
+document.querySelectorAll("[data-go]").forEach(function(b){b.addEventListener("click",function(){go(b.dataset.go)})});
+var S={days:{},contacts:[]};
+try{var raw=JSON.parse(localStorage.getItem("fa")||"null");if(raw&&raw.days)S=raw}catch(e){}
+function save(){try{localStorage.setItem("fa",JSON.stringify(S))}catch(e){}}
+function dk(o){var d=new Date();d.setDate(d.getDate()-o);return d.toLocaleDateString("sv-SE")}
+function setDone(o){
+$("win").classList.add("lit");
+$("titolo").textContent="Check-in fatto";
+$("sub").textContent="Registrato alle "+o+". Ci vediamo domani.";
+$("azioni").hidden=true;$("malebox").hidden=true;$("ieri").hidden=true;showWA();
+}
+function waNum(t){var d=t.replace(/[^0-9]/g,"");if(d.indexOf("00")===0)d=d.slice(2);else if(d.length===10&&d.charAt(0)==="3")d="39"+d;return d}
+function showWA(){
+var w=$("wa");w.innerHTML="";
+var c=S.contacts.filter(function(x){return x.ok})[0];
+if(!c||!S.days[dk(0)]){w.hidden=true;return}
+var a=document.createElement("a");a.className="btn main";a.target="_blank";a.rel="noopener";
+a.href="https://wa.me/"+waNum(c.t)+"?text="+encodeURIComponent("Tutto ok, buongiorno!");
+a.textContent="Scrivi \u201cTutto ok\u201d a "+c.n+" su WhatsApp";
+w.appendChild(a);
+var b=document.createElement("button"),msg="Tutto ok, buongiorno!";
+b.className="btn line";b.textContent="Non si apre? Condividi o copia il messaggio";
+b.addEventListener("click",async function(){
+var ok=false;
+try{if(navigator.share){await navigator.share({text:msg});ok=true}}catch(e){if(e&&e.name==="AbortError")return}
+if(!ok){try{await navigator.clipboard.writeText(msg);ok=true}catch(e){}}
+if(!ok){try{var t=document.createElement("textarea");t.value=msg;document.body.appendChild(t);t.select();ok=document.execCommand("copy");t.remove()}catch(e){}}
+b.textContent=ok?"Fatto. Ora incollalo nella chat con "+c.n:"Scrivilo a mano a "+c.n+": "+msg;
+});
+w.appendChild(b);w.hidden=false;
+}
+function ora(){return new Date().toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"})}
+function strip(){var h="";for(var i=6;i>=0;i--){h+='<div class="d'+(S.days[dk(i)]?' on':'')+'"></div>'}$("days").innerHTML=h}
+$("bene").addEventListener("click",function(){var o=ora();S.days[dk(0)]=o;save();setDone(o);strip()});
+$("male").addEventListener("click",function(){$("malebox").hidden=false});
+strip();
+if(S.days[dk(0)])setDone(S.days[dk(0)]);
+else if(Object.keys(S.days).length&&!S.days[dk(1)]){
+var att=S.contacts.filter(function(c){return c.ok}).map(function(c){return c.n});
+$("ieri").textContent="Ieri non hai fatto il check-in. "+(att.length?"Gli avvisi attivi andrebbero a: "+att.join(", ")+".":"In prova, l'avviso arriva solo a te.");
+$("ieri").hidden=false;
+}
+function drawC(){
+var u=$("lista");u.innerHTML="";
+S.contacts.forEach(function(c,i){
+var li=document.createElement("li"),l=document.createElement("label"),cb=document.createElement("input");
+cb.type="checkbox";cb.checked=c.ok;
+cb.addEventListener("change",function(){c.ok=cb.checked;save();drawC()});
+l.appendChild(cb);l.appendChild(document.createTextNode(c.n+" ("+c.t+")"));
+var st=document.createElement("span");st.className="soft";st.textContent=c.ok?"Ha detto di sì: avvisi attivi":"In pausa: non riceve nulla";
+var x=document.createElement("button");x.className="tab";x.textContent="Rimuovi";
+x.addEventListener("click",function(){S.contacts.splice(i,1);save();drawC()});
+li.appendChild(l);li.appendChild(st);li.appendChild(document.createElement("br"));li.appendChild(x);u.appendChild(li);
+});
+showWA();
+}
+$("aggiungi").addEventListener("click",function(){
+var n=$("cn").value.trim(),t=$("ct").value.trim();if(!n||!t)return;
+S.contacts.push({n:n,t:t,ok:false});$("cn").value="";$("ct").value="";save();drawC();
+});
+drawC();
+var log=$("log");
+function say(t,me){var d=document.createElement("div");d.className="m"+(me?" me":"");d.textContent=t;log.appendChild(d);d.scrollIntoView({block:"end"});return d}
+say("Ciao, sono qui. Come è andata la giornata?");
+function reply(t){
+t=t.toLowerCase();
+if(/petto|respir|caduto|caduta|svenut|sangue|aiuto/.test(t))return "Quello che descrivi può essere urgente. Chiama subito il 112: premi il pulsante rosso in Oggi, oppure telefona.";
+if(/solo|sola|solitudine/.test(t))return "Sentirsi soli pesa, e ne parli con coraggio. Ti va di raccontarmi cosa ti è mancato di più oggi?";
+if(/trist|giù|male|stanc/.test(t))return "Mi dispiace. Cosa è successo? Se ti senti molto giù per più giorni, parlane anche con il medico.";
+if(/febbre|dolore|nausea|vertigin/.test(t))return "Da quanto tempo hai questi sintomi? Se peggiorano, chiama il medico o il 112.";
+if(/mangiat|cena|pranzo|dormit/.test(t))return "Bene che ci pensi. Hai bevuto abbastanza acqua oggi?";
+return "Ti ascolto. Dimmi di più.";
+}
+var EM=/petto|respir|caduto|caduta|svenut|sangue|aiuto|togliermi la vita|farla finita|farmi del male/;
+function emerg(){var d=say("Se è urgente, chiama subito il 112.");var a=document.createElement("a");a.href="tel:112";a.className="btn sos";a.textContent="Chiama il 112";a.style.marginTop="10px";d.appendChild(a)}
+function invia(){var v=$("txt").value.trim();if(!v)return;say(v,true);$("txt").value="";if(EM.test(v.toLowerCase()))emerg();setTimeout(function(){say(reply(v))},500)}
+$("invia").addEventListener("click",invia);
+$("txt").addEventListener("keydown",function(e){if(e.key==="Enter")invia()});
+var st=0,li=document.querySelectorAll("#steps li");
+function paint(c){li.forEach(function(l,i){l.className=c[i]||""})}
+function reset(){st=0;paint(["on"]);$("avanti").textContent="Avvia la simulazione";$("nessuno").hidden=true;$("chiama").hidden=true;$("esito").hidden=true}
+$("avanti").addEventListener("click",function(){
+if(st===0){st=1;paint(["done","on"]);$("avanti").textContent="Avanti"}
+else if(st===1){st=2;paint(["done","done","on"]);$("avanti").textContent="Un volontario risponde";$("nessuno").hidden=false}
+else if(st===2){st=3;paint(["done","done","done"]);$("nessuno").hidden=true;$("esito").hidden=false;$("avanti").textContent="Ricomincia"}
+else reset();
+});
+$("nessuno").addEventListener("click",function(){
+st=3;paint(["done","done","done","end"]);$("nessuno").hidden=true;$("chiama").hidden=false;$("avanti").textContent="Ricomincia";
+});
+reset();
+</script>
+</body>
+</html>
